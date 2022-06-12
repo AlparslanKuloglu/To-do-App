@@ -1,12 +1,7 @@
 const mysql = require('mysql')
 
 
-let connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '12101210Sie',
-  database: 'deneme'
-});
+
 
 
 
@@ -105,11 +100,11 @@ exports.loginUser = async (req, res) => {
       res.render('index',{toDos,results})
       
 
-      });
+      })
 
         
         
-      });
+      })
 
 
 
@@ -131,4 +126,6 @@ exports.loginUser = async (req, res) => {
       });
     }
   };
+
+
 

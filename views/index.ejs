@@ -86,11 +86,29 @@
             
           <div style="float: right;">
             
-            <form method="post" action="/fail">     
-            <a class="btn btn-danger rounded-0 text-white"><span>Olmadı...</span></a></div>
-          </form>
+            <form method="post" action="/fail">
+              
+              <input type="hidden" name="taskID" value="<%= toDos[i].id  %>">
+
+            <button class="btn btn-danger rounded-0 text-white"><span>Olmadı...</span></button>
           
-          <div style="float: right;"><a method="post" href="/succes" class="btn btn-success"><span>Yaptım!</span></a></div>
+          </form>
+
+          </div>
+
+         
+          
+            
+          <div style="float: right;">
+            
+            <form method="post" action="/succes">
+              <input type="hidden" name="taskID" value="<%= toDos[i].id  %>">  
+            <button class="btn btn-success"><span>Yaptım!</span></button>
+          
+          </form>
+
+
+          </div>
           
          
           </li>
