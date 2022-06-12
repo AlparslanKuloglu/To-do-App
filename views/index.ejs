@@ -89,7 +89,7 @@
             <form method="post" action="/fail">
               
               <input type="hidden" name="taskID" value="<%= toDos[i].id  %>">
-
+              <input type="hidden" name="taskUserID" value="<%= toDos[i].user_id %>">
             <button class="btn btn-danger rounded-0 text-white"><span>Olmadı...</span></button>
           
           </form>
@@ -101,7 +101,7 @@
             
           <div style="float: right;">
             
-            <form method="post" action="/succes">
+            <form method="post" action="/fail">
               <input type="hidden" name="taskID" value="<%= toDos[i].id  %>">  
             <button class="btn btn-success"><span>Yaptım!</span></button>
           

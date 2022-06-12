@@ -34,7 +34,7 @@ app.use('/',pageRoute )
 app.use('/users',userRoute )
 app.use('/ekle',authController.addTask)
 app.use('/users/login',authController.loginUser)
-app.use('/fail',pageRoute )
+app.use('/fail',authController.deleteTask)
 
 const port = 3000
 

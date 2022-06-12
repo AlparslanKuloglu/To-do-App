@@ -1,7 +1,12 @@
 const mysql = require('mysql')
 
 
-
+let connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '12101210Sie',
+  database: 'deneme'
+});
 
 
 
@@ -23,10 +28,10 @@ exports.createUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
 
   try {
-    
-      
+    connection.connect(function (err) {
+      if (err) throw err;
       let user = `SELECT * FROM users WHERE user_email = '${req.body.email}'`;
-      
+
 
       connection.query(user, function (err, results) {
         if (err) throw err.message;
@@ -35,26 +40,26 @@ exports.loginUser = async (req, res) => {
 
         let enteringPass = req.body.password
 
-        
+
 
         let tasks = `SELECT * FROM todos WHERE user_id = '${results[0].id}'`;
-  
-  
+
+
         connection.query(tasks, function (err, toDos) {
           if (err) throw err.message;
-  
-        console.log(toDos)
-  
-        if (enteringPass === pass) { res.render('index', {toDos,results }) }
-        
-  
+
+          console.log(toDos)
+
+          if (enteringPass === pass) { res.render('index', { toDos, results }) }
+
+
         });
 
 
 
 
       });
-    
+    });
 
 
 
@@ -72,60 +77,88 @@ exports.loginUser = async (req, res) => {
 
 
 
-  exports.addTask = async (req, res) => {
+exports.addTask = async (req, res) => {
 
-    try {
-      //connection.connect(function (err) {
-     //if (err) throw err;
-     let task = req.body.task
-    
-     let user = `SELECT * FROM users WHERE user_email = '${req.body.userEmail}'`;
+  try {
+    //connection.connect(function (err) {
+    //if (err) throw err;
+    let task = req.body.task
 
-      connection.query(user, function (err, results) {
-       if (err) throw err.message;
+    let user = `SELECT * FROM users WHERE user_email = '${req.body.userEmail}'`;
+
+    connection.query(user, function (err, results) {
+      if (err) throw err.message;
       console.log(results[0])
       let toDo = `INSERT INTO todos VALUES(0, '${results[0].id}', '${task}', 0);`;
       connection.query(toDo, function (err, results2) {
         if (err) throw err.message;
-        });
-        
-        let tasks = `SELECT * FROM todos WHERE user_id = '${results[0].id}'`;
+      });
+
+      let tasks = `SELECT * FROM todos WHERE user_id = '${results[0].id}'`;
 
 
       connection.query(tasks, function (err, toDos) {
         if (err) throw err.message;
 
-      console.log(toDos)
+        console.log(toDos)
 
-      res.render('index',{toDos,results})
-      
-
-      })
-
-        
-        
-      })
+        res.render('index', { toDos, results })
 
 
-
-
-
-
-      //}
-
-      //);
-
-
-
-
-
-    } catch (error) {
-      res.status(400).json({
-        status: 'fail',
-        error,
       });
-    }
-  };
 
 
 
+    });
+
+
+
+
+
+
+    //}
+
+    //);
+
+
+
+
+
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
+};
+
+exports.deleteTask = async (req, res) => {
+
+  let deletingTask = `DELETE FROM todos WHERE id = ${req.body.taskID}  `;
+  let user = `SELECT * FROM users WHERE id = ${req.body.taskUserID}    `;
+  let tasks = `SELECT * FROM todos WHERE user_id = ${req.body.taskUserID}    `;
+
+
+  connection.query(deletingTask, function (err, x) {
+   
+    connection.query(user, function (err, results) {
+  
+      connection.query(tasks, function (err, toDos) {
+
+        res.render('index', { toDos, results })
+  
+
+    
+      });
+    
+    });
+
+ 
+ 
+  });
+
+ 
+
+
+
+}
