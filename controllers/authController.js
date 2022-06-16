@@ -1,26 +1,21 @@
 const mysql = require('mysql')
-
-
-let connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '12101210Sie',
-  database: 'deneme'
-});
+const Sequelize = require('sequelize')
+const sequelize = require('../app')
+const User = require('../models/user')
+const Task = require('../models/task')
 
 
 
 exports.createUser = async (req, res) => {
-  let addUser = await `INSERT INTO users (id,user_email,user_password,user_name,user_surname) VALUES( 0, '${req.body.email}', '${req.body.password}',NULL,NULL);`;
+  let user = await User.create({
+    email: req.body.email,
+    password: req.body.password,
+    fail:0,
+    succes:0
 
-  await connection.connect(function (err) {
-    if (err) throw err;
-    connection.query(addUser, function (err, results) {
-      if (err) throw err.message;
-      console.log('Başarılı bir şekilde eklendi.');
-    });
-  });
+  })
 
+  console.log(user)
   res.status(200).render('register')
 }
 
@@ -28,48 +23,31 @@ exports.createUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
 
   try {
-    connection.connect(function (err) {
-      if (err) throw err;
-      let user = `SELECT * FROM users WHERE user_email = '${req.body.email}'`;
+    const user = await User.findOne({
+      where: {
+        email: req.body.email
+      }
+    })
 
+    const toDos = await Task.findAll({
+      where: {
+        userEmail: user.dataValues.email
+      }
+    })
 
-      connection.query(user, function (err, results) {
-        if (err) throw err.message;
+    let userINF = user.dataValues
+    let pass = user.password
+    let enteringPass = req.body.password
 
-        let pass = results[0].user_password
-
-        let enteringPass = req.body.password
-
-
-
-        let tasks = `SELECT * FROM todos WHERE user_id = '${results[0].id}'`;
-
-
-        connection.query(tasks, function (err, toDos) {
-          if (err) throw err.message;
-
-          console.log(toDos)
-
-          if (enteringPass === pass) { res.render('index', { toDos, results }) }
-
-
-        });
-
-
-
-
-      });
-    });
+    if (pass === enteringPass) { res.render('index', { userINF,toDos }) }
 
 
 
 
 
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    prompt("Kullanıcı adı veya şifre hatalı")
+    await res.render('register')
   }
 };
 
@@ -80,49 +58,30 @@ exports.loginUser = async (req, res) => {
 exports.addTask = async (req, res) => {
 
   try {
-    //connection.connect(function (err) {
-    //if (err) throw err;
-    let task = req.body.task
 
-    let user = `SELECT * FROM users WHERE user_email = '${req.body.userEmail}'`;
-
-    connection.query(user, function (err, results) {
-      if (err) throw err.message;
-      console.log(results[0])
-      let toDo = `INSERT INTO todos VALUES(0, '${results[0].id}', '${task}', 0);`;
-      connection.query(toDo, function (err, results2) {
-        if (err) throw err.message;
-      });
-
-      let tasks = `SELECT * FROM todos WHERE user_id = '${results[0].id}'`;
+    const user = await User.findOne({
+      where: {
+        email: req.body.userEmail
+      }
+    })
 
 
-      connection.query(tasks, function (err, toDos) {
-        if (err) throw err.message;
-
-        console.log(toDos)
-
-        res.render('index', { toDos, results })
-
-
-      });
+    const task = await Task.create({
+      userEmail: req.body.userEmail,
+      task: req.body.task,
+      done: "no"
+    })
 
 
+ const toDos = await Task.findAll({
+      where: {
+        userEmail: req.body.userEmail
+      }
+    })
 
-    });
-
-
-
-
-
-
-    //}
-
-    //);
-
-
-
-
+  
+  let userINF=user.dataValues
+    res.render('index',{userINF,toDos})
 
   } catch (error) {
     res.status(400).json({
@@ -132,32 +91,78 @@ exports.addTask = async (req, res) => {
   }
 };
 
-exports.deleteTask = async (req, res) => {
-
-  let deletingTask = `DELETE FROM todos WHERE id = ${req.body.taskID}  `;
-  let user = `SELECT * FROM users WHERE id = ${req.body.taskUserID}    `;
-  let tasks = `SELECT * FROM todos WHERE user_id = ${req.body.taskUserID}    `;
-
-
-  connection.query(deletingTask, function (err, x) {
-   
-    connection.query(user, function (err, results) {
-  
-      connection.query(tasks, function (err, toDos) {
-
-        res.render('index', { toDos, results })
-  
-
-    
-      });
-    
-    });
-
+exports.failTask = async (req, res) => {
  
- 
-  });
+  const task = await Task.findOne({
+    where: {
+      id: req.body.taskID
+    }
+  })
 
+ await task.destroy()
+
+  const user = await User.findOne({
+    where: {
+      id: req.body.taskUserID
+    }
+  })
+
+ user.fail += await 1
+ await user.save()
  
+  let userINF = user.dataValues
+
+
+
+ const toDos = await Task.findAll({
+  where: {
+    userEmail: user.dataValues.email
+  }
+})
+
+
+
+ res.render('index',{userINF,toDos})
+
+}
+
+
+
+exports.succesTask = async (req, res) => {
+ 
+  const task = await Task.findOne({
+    where: {
+      id: req.body.taskID
+    }
+  })
+
+ await task.destroy()
+
+  const user = await User.findOne({
+    where: {
+      id: req.body.taskUserID
+    }
+  })
+
+ user.succes += await 1
+ await user.save()
+ 
+  let userINF = user.dataValues
+
+
+
+ const toDos = await Task.findAll({
+  where: {
+    userEmail: user.dataValues.email
+  }
+})
+
+
+
+ res.render('index',{userINF,toDos})
+
+
+
 
 
 

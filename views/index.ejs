@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="tr">
+
+<div>
+
+ <%= '\xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0  \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0' %>  Başardığın görev sayısı: <%=userINF.succes  %>  <%= '\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0'%>  Başaramadığın görev sayısı:  <%=userINF.fail  %>
+</div>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -68,7 +73,7 @@
     
         <h2>Yapılacaklar Listesi</h2>
         <form method="post" action="/ekle">
-        <input type="hidden" name="userEmail" value="<%= results[0].user_email %>" >
+        <input type="hidden" name="userEmail" value="<%= userINF.email %>" >
         <input type="text" name="task"  placeholder="Bugün ne yapacaksın?" />
         <button class="btn btn-dark"><%= '\xa0 \xa0 \xa0 EKLE \xa0 \xa0 \xa0 \xa0' %> </button>
         
@@ -76,10 +81,10 @@
       </div>
 
       
-      <% for (let i=0; i<toDos.length; i++ ){  %>
+      <%if(toDos) { for (let i=0; i<toDos.length; i++ ){  %>
         <ul id="list">
 
-        <li><%= toDos[i].todos  %>
+        <li><%=toDos[i].task %>
 
           
 
@@ -88,8 +93,8 @@
             
             <form method="post" action="/fail">
               
-              <input type="hidden" name="taskID" value="<%= toDos[i].id  %>">
-              <input type="hidden" name="taskUserID" value="<%= toDos[i].user_id %>">
+              <input type="hidden" name="taskID" value="<%=toDos[i].id %>">
+              <input type="hidden" name="taskUserID" value="<%= userINF.id %>">
             <button class="btn btn-danger rounded-0 text-white"><span>Olmadı...</span></button>
           
           </form>
@@ -101,9 +106,9 @@
             
           <div style="float: right;">
             
-            <form method="post" action="/fail">
-              <input type="hidden" name="taskID" value="<%= toDos[i].id  %>">
-              <input type="hidden" name="taskUserID" value="<%= toDos[i].user_id %>">  
+            <form method="post" action="/succes">
+              <input type="hidden" name="taskID" value="<%=toDos[i].id %>">
+              <input type="hidden" name="taskUserID" value="<%=userINF.id  %>">  
             <button class="btn btn-success"><span>Yaptım!</span></button>
           
           </form>
@@ -122,7 +127,7 @@
           
             
           </ul>
-        <% } %>
+        <%  } } %>
        
 
       
