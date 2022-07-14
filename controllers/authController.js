@@ -29,24 +29,26 @@ exports.loginUser = async (req, res) => {
       }
     })
 
-    const toDos = await Task.findAll({
-      where: {
-        userEmail: user.dataValues.email
-      }
-    })
+  
+    req.session.email=req.body.email
+    console.log(user.dataValues.email)
+    console.log(req.session)
 
-    let userINF = user.dataValues
     let pass = user.password
     let enteringPass = req.body.password
 
-    if (pass === enteringPass) { res.render('index', { userINF,toDos }) }
+  
+
+    
+
+    if (pass === enteringPass) {res.redirect("/toDos") }
 
 
 
 
 
   } catch (error) {
-    prompt("Kullanıcı adı veya şifre hatalı")
+  
     await res.render('register')
   }
 };
@@ -61,27 +63,20 @@ exports.addTask = async (req, res) => {
 
     const user = await User.findOne({
       where: {
-        email: req.body.userEmail
+        email: req.session.email
       }
     })
 
 
     const task = await Task.create({
-      userEmail: req.body.userEmail,
+      userEmail: req.session.email,
       task: req.body.task,
       done: "no"
     })
 
 
- const toDos = await Task.findAll({
-      where: {
-        userEmail: req.body.userEmail
-      }
-    })
-
-  
-  let userINF=user.dataValues
-    res.render('index',{userINF,toDos})
+    
+  res.redirect("/toDos")
 
   } catch (error) {
     res.status(400).json({
@@ -103,26 +98,14 @@ exports.failTask = async (req, res) => {
 
   const user = await User.findOne({
     where: {
-      id: req.body.taskUserID
+     email:req.session.email
     }
   })
 
  user.fail += await 1
  await user.save()
  
-  let userINF = user.dataValues
-
-
-
- const toDos = await Task.findAll({
-  where: {
-    userEmail: user.dataValues.email
-  }
-})
-
-
-
- res.render('index',{userINF,toDos})
+ res.redirect("/toDos")
 
 }
 
@@ -140,30 +123,92 @@ exports.succesTask = async (req, res) => {
 
   const user = await User.findOne({
     where: {
-      id: req.body.taskUserID
+      email:req.session.email
     }
   })
-
  user.succes += await 1
  await user.save()
  
-  let userINF = user.dataValues
-
-
-
- const toDos = await Task.findAll({
-  where: {
-    userEmail: user.dataValues.email
-  }
-})
-
-
-
- res.render('index',{userINF,toDos})
-
-
+  
+res.redirect("/toDos")
 
 
 
 
 }
+
+
+
+exports.düzenleTask = async (req, res) => {
+ 
+  const task = await Task.findOne({
+    where: {
+      id: req.body.taskID
+    }
+  })
+
+task.task= await req.body.task
+await task.save()
+  
+
+res.redirect("/toDos")
+
+}
+
+
+
+
+
+exports.getIndexPage=  async (req,res)=> {
+
+  const user = await User.findOne({
+    where: {
+      email: req.session.email
+    }
+  })
+
+  const search = req.query.search;
+  const page = req.query.page || 1;            
+  const totalTasks = await Task.findAndCountAll({where:{ userEmail: user.dataValues.email}})
+
+  if(search) { 
+  const tasks = await Task.findAll({
+    where: {
+      task:search
+    },
+    order: [["createdAt", "DESC"]]
+  }) 
+
+  res.render('index',{user,tasks,
+    current: page,
+    pages: Math.ceil(totalTasks.count / 5)})
+
+  
+  
+}
+
+ 
+if(!search) {
+    
+  
+  const tasks = await Task.findAll({
+    where: {
+      userEmail:req.session.email
+    },
+    order: [["createdAt", "DESC"]],
+    limit:5,
+    offset:( (page-1) * 5 ) 
+  }) 
+
+  res.render('index',{user,tasks,
+    current: page,
+    pages: Math.ceil(totalTasks.count / 5)})
+}
+
+}
+
+
+
+
+
+

@@ -3,7 +3,7 @@
 
 <div>
 
- <%= '\xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0  \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0' %>  Başardığın görev sayısı: <%=userINF.succes  %>  <%= '\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0'%>  Başaramadığın görev sayısı:  <%=userINF.fail  %>
+ <%= '\xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0  \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0' %>  Başardığın görev sayısı: <%= user.succes  %>  <%= '\xa0 \xa0 \xa0 \xa0 \xa0 \xa0 \xa0'%>  Başaramadığın görev sayısı:  <%=user.fail%>
 </div>
   <head>
     <meta charset="UTF-8" />
@@ -20,60 +20,15 @@
     
   </head>
   <body>
-    <div class="mr-1" style="position: relative">
-      <div style="position: absolute; top: 0; right: 0">
-        <div
-          id="liveToast"
-          class="toast success hide"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          data-delay="4000"
-        >
-          <div>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="toast"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="toast-body">Listeye eklendi.</div>
-        </div>
-      </div>
-    </div>
-    <div class="mr-1" style="position: relative">
-      <div style="position: absolute; top: 0; right: 0">
-        <div
-          id="liveToast"
-          class="toast error hide"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          data-delay="4000"
-        >
-          <div>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="toast"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="toast-body">Listeye boş ekleme yapamazsınız!</div>
-        </div>
-      </div>
-    </div>
+
+ 
+   
     <div class="container">
       <div class="header">
     
         <h2>Yapılacaklar Listesi</h2>
         <form method="post" action="/ekle">
-        <input type="hidden" name="userEmail" value="<%= userINF.email %>" >
+        <input type="hidden" name="userEmail" value="" >
         <input type="text" name="task"  placeholder="Bugün ne yapacaksın?" />
         <button class="btn btn-dark"><%= '\xa0 \xa0 \xa0 EKLE \xa0 \xa0 \xa0 \xa0' %> </button>
         
@@ -81,20 +36,49 @@
       </div>
 
       
-      <%if(toDos) { for (let i=0; i<toDos.length; i++ ){  %>
+      <form method="GET" id="site-searchform" action="/toDos">
+        <div class="input-group rounded">
+          <input class="input-text form-control" name="search" id="search-k" placeholder="Yapılacakları ara..." type="text">
+          <button class="btn btn-dark"><%= '\xa0 \xa0 \xa0 ARA \xa0 \xa0 \xa0 \xa0' %> </button>
+        </div>
+      </form>
+
+
+     
+    
+
+
+      <%if(tasks) { for (let i=0; i<tasks.length; i++ ){  %>
         <ul id="list">
 
-        <li><%=toDos[i].task %>
+        <li><%=tasks[i].task %>
+
+
+
 
           
+
+
+          <div style="flood-color: coral;">
+            
+            <form method="post" action="/duzenle">
+              <input type="text" name="task">
+              <input type="hidden" name="taskID" value="<%=tasks[i].id %>">
+              <input type="hidden" name="taskUserID" value="">
+            <button class="btn-blue"><span>Düzenle</span></button>
+            
+          
+          </form>
+
+          </div>
 
             
           <div style="float: right;">
             
             <form method="post" action="/fail">
               
-              <input type="hidden" name="taskID" value="<%=toDos[i].id %>">
-              <input type="hidden" name="taskUserID" value="<%= userINF.id %>">
+              <input type="hidden" name="taskID" value="<%=tasks[i].id %>">
+              <input type="hidden" name="taskUserID" >
             <button class="btn btn-danger rounded-0 text-white"><span>Olmadı...</span></button>
           
           </form>
@@ -107,8 +91,8 @@
           <div style="float: right;">
             
             <form method="post" action="/succes">
-              <input type="hidden" name="taskID" value="<%=toDos[i].id %>">
-              <input type="hidden" name="taskUserID" value="<%=userINF.id  %>">  
+              <input type="hidden" name="taskID" value="<%=tasks[i].id %>">
+              <input type="hidden" name="taskUserID">  
             <button class="btn btn-success"><span>Yaptım!</span></button>
           
           </form>
@@ -128,6 +112,26 @@
             
           </ul>
         <%  } } %>
+
+
+
+        <div>
+        
+          <% if (pages > 0) { %>
+           <ul class="nav tm-paging-links">
+               <% for (i=1; i <=pages; i++) { %>
+        
+                   <%   if (i == current) { %>
+                       <li class="nav-item active"><a href="/toDos/?page=<%= i %>" class="nav-link tm-paging-link"><%= i %></a></li>
+                   <% } else if (i < pages) { %>
+                       <li class="nav-item"><a href="/toDos/?page=<%= i %>" class="nav-link tm-paging-link"><%= i %></a></li>
+                   <%  } else { %>
+                       <li class="nav-item"><a href="/toDos/?page=<%= i %>" class="nav-link tm-paging-link">></a></li>
+                   <%  } %>
+               <%  } %>
+           </ul>
+           <% } %>
+       </div>
        
 
       
@@ -145,4 +149,8 @@
       ></script>
     </div>
   </body>
+
+  
+
+  
 </html>

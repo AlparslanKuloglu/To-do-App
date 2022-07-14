@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
     dialect: 'mysql'
    })
 
-const User = sequelize.define('user',{
+const User = sequelize.define('todo',{
     id: {
      type: Sequelize.INTEGER,
      autoIncrement: true,
@@ -23,6 +23,8 @@ const User = sequelize.define('user',{
     password: {type: Sequelize.STRING}
 }
     )
+
+    User.sync()
 
     module.exports = User
 

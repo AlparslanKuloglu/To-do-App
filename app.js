@@ -11,7 +11,27 @@ const fs = require('fs')
 const path=require('path')
 
 
+const MySQLStore = require('express-mysql-session')(session);
 
+
+
+const options = {                 // setting connection options
+  host: 'localhost',
+  user: 'root',
+  password: '12101210Sie',
+  database: 'deneme',
+};
+
+const sessionStore = new MySQLStore(options);
+
+app.use(
+  session({
+      secret: 'cookie_secret',
+      resave: false,
+      saveUninitialized: false,
+      store: sessionStore,      // assigning sessionStore to the session
+  })
+);
 
 
 
@@ -47,6 +67,7 @@ app.use('/ekle',authController.addTask)
 app.use('/users/login',authController.loginUser)
 app.use('/fail',authController.failTask)
 app.use('/succes',authController.succesTask)
+app.use('/duzenle',authController.düzenleTask)
 
 const port = 3000
 
