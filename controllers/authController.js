@@ -3,6 +3,11 @@ const Sequelize = require('sequelize')
 const sequelize = require('../app')
 const User = require('../models/user')
 const Task = require('../models/task')
+const UserRepostory = require('../repostories/userRepostory')
+
+
+
+
 
 
 
@@ -134,7 +139,6 @@ res.redirect("/toDos")
 
 
 
-
 }
 
 
@@ -161,23 +165,17 @@ res.redirect("/toDos")
 
 exports.getIndexPage=  async (req,res)=> {
 
-  const user = await User.findOne({
-    where: {
-      email: req.session.email
-    }
-  })
+
+let user= await new UserRepostory().user(req.session.email)
+
+
 
   const search = req.query.search;
   const page = req.query.page || 1;            
-  const totalTasks = await Task.findAndCountAll({where:{ userEmail: user.dataValues.email}})
+  const totalTasks = await Task.findAndCountAll({where:{ userEmail: user.email}})
 
   if(search) { 
-  const tasks = await Task.findAll({
-    where: {
-      task:search
-    },
-    order: [["createdAt", "DESC"]]
-  }) 
+   const tasks = await new UserRepostory().searchTasks(search)
 
   res.render('index',{user,tasks,
     current: page,
@@ -189,16 +187,10 @@ exports.getIndexPage=  async (req,res)=> {
 
  
 if(!search) {
-    
   
-  const tasks = await Task.findAll({
-    where: {
-      userEmail:req.session.email
-    },
-    order: [["createdAt", "DESC"]],
-    limit:5,
-    offset:( (page-1) * 5 ) 
-  }) 
+  const tasks= await new UserRepostory().allTasks(user.email,page)
+
+
 
   res.render('index',{user,tasks,
     current: page,

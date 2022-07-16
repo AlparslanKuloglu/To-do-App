@@ -8,7 +8,8 @@ const authController=require('./controllers/authController')
 const pageRoute= require('./routes/pageRoute')
 const userRoute= require('./routes/userRoute')
 const fs = require('fs')
-const path=require('path')
+const path=require('path');
+const { findUser } = require('./test');
 
 
 const MySQLStore = require('express-mysql-session')(session);
@@ -75,6 +76,7 @@ app.listen(port, () => {
   console.log('Sunucu port 3000de başlatıldı')
 
 })
+
 
 
 
