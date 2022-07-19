@@ -4,9 +4,8 @@ const sequelize = require('../app')
 const User = require('../models/user')
 const Task = require('../models/task')
 const UserRepostory = require('../repostories/userRepostory')
-
-
-
+const jwt = require('jsonwebtoken')
+require("dotenv").config();
 
 
 
@@ -19,6 +18,20 @@ exports.createUser = async (req, res) => {
     succes:0
 
   })
+  const { email, password } = req.body;
+
+  const token = jwt.sign(
+    { user_id: user._id, email },
+    `${process.env.JWT_SECRET_KEY}`,
+    {
+      expiresIn: "2h",
+    }
+  );
+  // save user token
+  user.token = token;
+  user.save()
+
+
 
   console.log(user)
   res.status(200).render('register')

@@ -40,7 +40,13 @@ class UserRepostory{
             order: [["createdAt", "DESC"]]
           }) 
           return tasks
+    }
 
+    async tokenAuth(){
+
+
+
+      
     }
   
 

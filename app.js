@@ -7,6 +7,7 @@ const Sequelize = require('sequelize')
 const authController=require('./controllers/authController')
 const pageRoute= require('./routes/pageRoute')
 const userRoute= require('./routes/userRoute')
+const tokenAuth = require('./middlewares/tokenAuth')
 const fs = require('fs')
 const path=require('path');
 const { findUser } = require('./test');
@@ -64,7 +65,7 @@ app.use(express.json())
 
 app.use('/',pageRoute )
 app.use('/users',userRoute )
-app.use('/ekle',authController.addTask)
+app.use('/ekle',tokenAuth, authController.addTask)
 app.use('/users/login',authController.loginUser)
 app.use('/fail',authController.failTask)
 app.use('/succes',authController.succesTask)

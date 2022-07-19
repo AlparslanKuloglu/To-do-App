@@ -28,7 +28,8 @@
     
         <h2>Yapılacaklar Listesi</h2>
         <form method="post" action="/ekle">
-        <input type="hidden" name="userEmail" value="" >
+        <input type="hidden" name="token" value=<%=user.token  %>  >
+        <input type="hidden" name="user" value=<%=user %>  >
         <input type="text" name="task"  placeholder="Bugün ne yapacaksın?" />
         <button class="btn btn-dark"><%= '\xa0 \xa0 \xa0 EKLE \xa0 \xa0 \xa0 \xa0' %> </button>
         

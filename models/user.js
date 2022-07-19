@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
     dialect: 'mysql'
    })
 
-const User = sequelize.define('todo',{
+const User = sequelize.define('user',{
     id: {
      type: Sequelize.INTEGER,
      autoIncrement: true,
@@ -20,9 +20,11 @@ const User = sequelize.define('todo',{
     fail:
     {type:Sequelize.INTEGER},
     email:{type: Sequelize.STRING},
-    password: {type: Sequelize.STRING}
+    password: {type: Sequelize.STRING},
+    token: {type: Sequelize.STRING}
 }
     )
+    console.log("userrr")
 
     User.sync()
 
